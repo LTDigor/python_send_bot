@@ -1,0 +1,35 @@
+{
+  "buttons": [
+    [
+      {
+        "action": {
+          "type": "text",
+          "label": "Подписаться на рассылку",
+          "payload": ""
+        },
+        "color": "positive"
+      }
+    ],
+    [
+      {
+        "action": {
+          "type": "open_app",
+          "app_id": 2000,
+          "payload": "",
+          "label": "Приложение",
+          "hash": ""
+        }
+      }
+    ],
+    [
+      {
+        "action": {
+          "type": "text",
+          "label": "Обратная связь",
+          "payload": ""
+        },
+        "color": "primary"
+      }
+    ]
+  ]
+}
