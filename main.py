@@ -1,9 +1,8 @@
-import json
-import random
+import logging
 from typing import Optional
 
 import vk_api
-from fastapi import FastAPI, HTTPException, Response
+from fastapi import FastAPI, HTTPException
 from fastapi.responses import PlainTextResponse
 
 from constants import API_TOKEN, GROUP_ID
@@ -53,6 +52,7 @@ def create_vk_api_connection():
 
 
 def message_new(obj):
+    logging.info('message new')
     user_id = obj['user_id']
     if obj['payload'] == '{"command":"start"}':
         subscribe_everywhere(user_id)
@@ -67,6 +67,7 @@ def message_new(obj):
     elif str(obj['text']).lower().strip() == 'отмена':
         # на стартовый экран
         pass
+
 
 def send_message(message: str, user_id: int, keyboard: Optional[str] = None):
     vk = create_vk_api_connection()
