@@ -3,16 +3,6 @@
     [
       {
         "action": {
-          "type": "text",
-          "label": "Подписаться на рассылку",
-          "payload": ""
-        },
-        "color": "positive"
-      }
-    ],
-    [
-      {
-        "action": {
           "type": "open_app",
           "app_id": 2000,
           "payload": "",
@@ -25,10 +15,20 @@
       {
         "action": {
           "type": "text",
-          "label": "Обратная связь",
+          "label": "Подписаться на рассылки",
           "payload": ""
         },
-        "color": "primary"
+        "color": "positive"
+      }
+    ],
+    [
+      {
+        "action": {
+          "type": "text",
+          "label": "Отписаться от рассылок",
+          "payload": ""
+        },
+        "color": "negative"
       }
     ]
   ]

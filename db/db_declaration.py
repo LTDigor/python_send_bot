@@ -1,19 +1,14 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, create_engine
-from sqlalchemy.orm import relationship, DeclarativeBase
+from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy.orm import relationship, declarative_base
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///../sql_app.db"
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
-
-
-class Base(DeclarativeBase):
-    pass
+Base = declarative_base()
 
 
 class MailingTypes(Base):
     __tablename__ = "mailing_types"
 
     id = Column(Integer, primary_key=True, index=True)
-    description = Column(String)
+    description = Column(String, unique=True)
     children = relationship("UserMailings", back_populates="parent")
 
 
