@@ -4,28 +4,41 @@ from typing import Optional
 import vk_api
 from fastapi import HTTPException
 
+from bot_text.bot_text import WANT_SUBSCRIBE, WANT_UNSUBSCRIBE, CANCEL
 from constants import API_TOKEN
+from models.CallbackReq import CallbackObject, Payload
 from utils.db_utils import subscribe_everywhere, get_user_unsubscribed_mailing_ids, subscribe_user, unsubscribe_user, \
     get_user_mailing_ids
 from utils.keyboard_utlis import build_keyboard_subscribe, build_keyboard_unsubscribe
 
 
-def message_new(obj):
-    print("Message new")
+def convert_str_to_payload(payload):
+    payload_dict = json.loads(payload)
+    return Payload(
+        command=payload_dict.get('command'),
+        type=payload_dict.get('type'),
+        mailing_id=payload_dict.get('mailing_id'),
+    )
 
-    user_id = obj['user_id']
+
+def message_new(obj: CallbackObject):
+    user_id = obj.message.from_id
     start_screen = json.dumps(json.load(open("resources/SubscribeScreen.json")))
 
-    if 'payload' in obj and 'command' in obj['payload']:
+    payload = obj.message.payload and convert_str_to_payload(obj.message.payload)
+
+    if payload and 'command' in obj.message.payload:
         meeting_screen(start_screen, user_id)
-    elif str(obj['text']).lower().strip() == 'подписаться на рассылки':
+    elif obj.message.text.lower().strip() == WANT_SUBSCRIBE.lower():
         subscribe_list_screen(user_id)
-    elif str(obj['text']).lower().strip() == 'отписаться от рассылки':
+    elif obj.message.text.lower().strip() == WANT_UNSUBSCRIBE.lower():
         unsubscribe_list_screen(user_id)
-    elif str(obj['text']).lower().strip() == 'отмена':
+    elif obj.message.text.lower().strip() == CANCEL.lower():
         send_message("Выберите действие", user_id, start_screen)
-    elif 'payload' in obj and 'type' in obj['payload']:
-        mailing_operation(obj, user_id)
+    elif obj.message.payload and 'type' in obj.message.payload:
+        mailing_operation(payload, user_id)
+    else:
+        raise HTTPException(status_code=400, detail=f"Unknown text {obj.message.text}")
 
 
 def meeting_screen(start_screen, user_id):
@@ -33,18 +46,18 @@ def meeting_screen(start_screen, user_id):
     send_message("Вы подписаны на все, ЛООЛ лол", user_id, start_screen)
 
 
-def mailing_operation(obj, user_id):
+def mailing_operation(payload: Payload, user_id):
     start_screen = json.dumps(json.load(open("resources/SubscribeScreen.json")))
 
-    mailing_id = obj['payload']['mailing_id']
-    if obj['payload']['type'] == 'subscribe':
+    mailing_id = payload.mailing_id
+    if payload.type == 'subscribe':
         subscribe_user(user_id, mailing_id)
         send_message("Подписка добавлена", user_id, start_screen)
-    elif obj['payload']['type'] == 'unsubscribe':
+    elif payload.type == 'unsubscribe':
         unsubscribe_user(user_id, mailing_id)
         send_message("Подписка удалена", user_id, start_screen)
     else:
-        raise HTTPException(status_code=400, detail=f"Wrong payload type {obj['payload']['type']}")
+        raise HTTPException(status_code=400, detail=f"Wrong payload type {payload.type}")
 
 
 def subscribe_list_screen(user_id):

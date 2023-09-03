@@ -24,7 +24,6 @@ def build_keyboard(mailing_objects, subscribe_type):
             "action": {
                 "type": "text",
                 "label": "Отмена",
-                "payload": ""
             },
             "color": "negative"
         }]

@@ -1,3 +1,5 @@
+import time
+
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import PlainTextResponse
 
@@ -12,7 +14,6 @@ app = FastAPI()
 
 @app.post("/")
 async def callback(req: CallbackReq):
-    print(req)
     if req.type == "confirmation":
         return confirm_server()
     elif req.type == "message_new":
@@ -26,13 +27,17 @@ async def send_messages(message_req: SendMessagesReq):
     user_ids = get_user_ids(mailing_type=message_req.mailing_type, user_ids=message_req.user_ids)
 
     try:
-        # todo execute for 100k users
-        vk.messages.send(
-            access_token=API_TOKEN,
-            random_id=0,
-            user_ids=user_ids,
-            message=message_req.message,
-        )
+        max_users = 99
+        user_ids_buckets = [user_ids[i:i + max_users] for i in range(0, len(user_ids), max_users)]
+        for user_ids_bucket in user_ids_buckets:
+            vk.messages.send(
+                access_token=API_TOKEN,
+                random_id=0,
+                user_ids=user_ids_bucket,
+                message=message_req.message,
+            )
+            time.sleep(0.1)
+
     except Exception as error_msg:
         raise HTTPException(status_code=500, detail=str(error_msg))
 
