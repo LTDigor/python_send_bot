@@ -26,7 +26,7 @@ async def send_messages(message_req: SendMessagesReq):
     user_ids = get_user_ids(mailing_type=message_req.mailing_type, user_ids=message_req.user_ids)
 
     try:
-        # todo execude for 100k users
+        # todo execute for 100k users
         vk.messages.send(
             access_token=API_TOKEN,
             random_id=0,
