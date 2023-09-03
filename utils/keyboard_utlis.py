@@ -1,6 +1,7 @@
 import json
 
 from bot_text.bot_text import *
+from constants import APP_ID
 from utils.db_utils import get_mailings
 
 
@@ -62,7 +63,7 @@ def build_keyboard_start_screen():
                 {
                     "action": {
                         "type": "open_app",
-                        "app_id": 2000,
+                        "app_id": APP_ID,
                         "payload": "",
                         "label": OPEN_APP,
                         "hash": ""

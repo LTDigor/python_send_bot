@@ -2,7 +2,6 @@ WANT_SUBSCRIBE = "Подписаться на рассылки"
 WANT_UNSUBSCRIBE = "Отписаться от рассылок"
 CANCEL = "Отмена"
 
-APP_ID = 2000  # todo paste app_id
 OPEN_APP = "Перейти в приложение"
 
 CHOOSE_ACTION = "Выберите действие"
