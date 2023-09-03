@@ -1,41 +1,30 @@
 import json
-from typing import Optional
 
 import vk_api
-from fastapi import HTTPException
 
-from bot_text.bot_text import WANT_SUBSCRIBE, WANT_UNSUBSCRIBE, CANCEL
+from bot_text.bot_text import *
 from constants import API_TOKEN
 from models.CallbackReq import CallbackObject, Payload
-from utils.db_utils import subscribe_everywhere, get_user_unsubscribed_mailing_ids, subscribe_user, unsubscribe_user, \
-    get_user_mailing_ids
-from utils.keyboard_utlis import build_keyboard_subscribe, build_keyboard_unsubscribe
-
-
-def convert_str_to_payload(payload):
-    payload_dict = json.loads(payload)
-    return Payload(
-        command=payload_dict.get('command'),
-        type=payload_dict.get('type'),
-        mailing_id=payload_dict.get('mailing_id'),
-    )
+from utils.converter import convert_str_to_payload
+from utils.db_utils import *
+from utils.keyboard_utlis import build_keyboard_subscribe, build_keyboard_unsubscribe, build_keyboard_start_screen
 
 
 def message_new(obj: CallbackObject):
     user_id = obj.message.from_id
-    start_screen = json.dumps(json.load(open("resources/SubscribeScreen.json")))
+    start_screen = build_keyboard_start_screen()
 
     payload = obj.message.payload and convert_str_to_payload(obj.message.payload)
 
-    if payload and 'command' in obj.message.payload:
+    if payload and payload.command:
         meeting_screen(start_screen, user_id)
     elif obj.message.text.lower().strip() == WANT_SUBSCRIBE.lower():
         subscribe_list_screen(user_id)
     elif obj.message.text.lower().strip() == WANT_UNSUBSCRIBE.lower():
         unsubscribe_list_screen(user_id)
     elif obj.message.text.lower().strip() == CANCEL.lower():
-        send_message("Выберите действие", user_id, start_screen)
-    elif obj.message.payload and 'type' in obj.message.payload:
+        send_message(CHOOSE_ACTION, user_id, start_screen)
+    elif payload.type:
         mailing_operation(payload, user_id)
     else:
         raise HTTPException(status_code=400, detail=f"Unknown text {obj.message.text}")
@@ -43,19 +32,19 @@ def message_new(obj: CallbackObject):
 
 def meeting_screen(start_screen, user_id):
     subscribe_everywhere(user_id)
-    send_message("Вы подписаны на все, ЛООЛ лол", user_id, start_screen)
+    send_message(MEETING_TEXT, user_id, start_screen)
 
 
 def mailing_operation(payload: Payload, user_id):
-    start_screen = json.dumps(json.load(open("resources/SubscribeScreen.json")))
+    start_screen = build_keyboard_start_screen()
 
     mailing_id = payload.mailing_id
-    if payload.type == 'subscribe':
+    if payload.type == SUBSCRIBE_PAYLOAD:
         subscribe_user(user_id, mailing_id)
-        send_message("Подписка добавлена", user_id, start_screen)
-    elif payload.type == 'unsubscribe':
+        send_message(MAILING_ADDED, user_id, start_screen)
+    elif payload.type == UNSUBSCRIBE_PAYLOAD:
         unsubscribe_user(user_id, mailing_id)
-        send_message("Подписка удалена", user_id, start_screen)
+        send_message(MAILING_DELETED, user_id, start_screen)
     else:
         raise HTTPException(status_code=400, detail=f"Wrong payload type {payload.type}")
 
@@ -63,19 +52,19 @@ def mailing_operation(payload: Payload, user_id):
 def subscribe_list_screen(user_id):
     mailing_ids = get_user_unsubscribed_mailing_ids(user_id)
     if not mailing_ids:
-        send_message("Вы подписаны на все доступные рассылки", user_id)
+        send_message(ALL_MAILINGS_SUBSCRIBED, user_id)
     else:
         keyboard = build_keyboard_subscribe(mailing_ids)
-        send_message("Выберите рассылку для подписки", user_id, keyboard)
+        send_message(CHOOSE_MAILING_TO_SUBSCRIBE, user_id, keyboard)
 
 
 def unsubscribe_list_screen(user_id):
     mailing_ids = get_user_mailing_ids(user_id)
     if not mailing_ids:
-        send_message("Вы уже отписались от всех рассылок", user_id)
+        send_message(ALL_MAILINGS_UNSUBSCRIBED, user_id)
     else:
         keyboard = build_keyboard_unsubscribe(mailing_ids)
-        send_message("Выберите рассылку, от который хотите отписаться", user_id, keyboard)
+        send_message(CHOOSE_MAILING_TO_UNSUBSCRIBE, user_id, keyboard)
 
 
 def send_message(message: str, user_id: int, keyboard: Optional[str] = None):

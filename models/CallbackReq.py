@@ -6,7 +6,7 @@ from pydantic import BaseModel
 class Payload(BaseModel):
     command: Optional[str] = None
     type: Optional[str] = None
-    mailing_id: Optional[str] = None
+    mailing_id: Optional[int] = None
 
 
 class Message(BaseModel):
