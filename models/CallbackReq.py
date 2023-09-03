@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Json
 
 
 class Payload(BaseModel):
@@ -22,7 +22,7 @@ class Message(BaseModel):
     peer_id: int
     random_id: int
     text: str
-    payload: Optional[str] = None
+    payload: Optional[Json[Payload]] = None
 
 
 class ClientInfo(BaseModel):

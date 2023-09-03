@@ -3,7 +3,6 @@ import vk_api
 from bot_text.bot_text import *
 from constants import API_TOKEN
 from models.CallbackReq import CallbackObject, Payload
-from utils.converter import convert_str_to_payload
 from utils.db_utils import *
 from utils.keyboard_utlis import build_keyboard_subscribe, build_keyboard_unsubscribe, build_keyboard_start_screen
 
@@ -12,7 +11,7 @@ def message_new(obj: CallbackObject):
     user_id = obj.message.from_id
     start_screen = build_keyboard_start_screen()
 
-    payload = obj.message.payload and convert_str_to_payload(obj.message.payload)
+    payload = obj.message.payload
 
     if payload and payload.command:
         meeting_screen(start_screen, user_id)
