@@ -1,5 +1,3 @@
-import json
-
 import vk_api
 
 from bot_text.bot_text import *
