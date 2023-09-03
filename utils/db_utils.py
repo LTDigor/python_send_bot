@@ -43,19 +43,22 @@ def get_user_ids(mailing_type: int, user_ids: Optional[List[int]]) -> List[int]:
 
 
 def subscribe_user(user_id, mailing_type):
-    db = Session(engine)
-    if len(list(db.execute(select(UserMailings).where(
-            and_(
-                UserMailings.mailing_type_id == mailing_type,
-                UserMailings.user_id == user_id
-            )
-    )).scalars())) == 0:
-        db.execute(insert(UserMailings).values(
-            user_id=user_id,
-            mailing_type_id=mailing_type,
-        ))
+    if mailing_type == -1:
+        subscribe_everywhere(user_id)
+    else:
+        db = Session(engine)
+        if len(list(db.execute(select(UserMailings).where(
+                and_(
+                    UserMailings.mailing_type_id == mailing_type,
+                    UserMailings.user_id == user_id
+                )
+        )).scalars())) == 0:
+            db.execute(insert(UserMailings).values(
+                user_id=user_id,
+                mailing_type_id=mailing_type,
+            ))
 
-        db.commit()
+            db.commit()
 
 
 def subscribe_everywhere(user_id):
@@ -101,13 +104,28 @@ def get_user_unsubscribed_mailing_ids(user_id):
 
 
 def unsubscribe_user(user_id, mailing_type):
+    if mailing_type == -1:
+        unsubscribe_user_everywhere(user_id)
+    else:
+        db = Session(engine)
+        db.execute(delete(
+            UserMailings
+        ).where(
+            and_(
+                UserMailings.user_id == user_id,
+                UserMailings.mailing_type_id == mailing_type,
+            )
+        ))
+        db.commit()
+
+
+def unsubscribe_user_everywhere(user_id):
     db = Session(engine)
     db.execute(delete(
         UserMailings
     ).where(
         and_(
             UserMailings.user_id == user_id,
-            UserMailings.mailing_type_id == mailing_type,
         )
     ))
     db.commit()

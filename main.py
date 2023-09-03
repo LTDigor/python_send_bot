@@ -18,7 +18,7 @@ async def callback(req: CallbackReq):
         return confirm_server()
     elif req.type == "message_new":
         message_new(req.object)
-        return "Done"
+        return PlainTextResponse("ok")
 
 
 @app.post("/send/")
@@ -27,6 +27,12 @@ async def send_messages(message_req: SendMessagesReq):
     user_ids = get_user_ids(mailing_type=message_req.mailing_type, user_ids=message_req.user_ids)
 
     try:
+        # vk.messages.send(
+        #     access_token=API_TOKEN,
+        #     random_id=0,
+        #     user_ids=user_ids,
+        #     message=message_req.message,
+        # )
         max_users = 99
         user_ids_buckets = [user_ids[i:i + max_users] for i in range(0, len(user_ids), max_users)]
         for user_ids_bucket in user_ids_buckets:
