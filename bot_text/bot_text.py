@@ -1,6 +1,7 @@
 WANT_SUBSCRIBE = "Подписаться на рассылки"
 WANT_UNSUBSCRIBE = "Отписаться от рассылок"
 CANCEL = "Отмена"
+START_COMMAND_LIST = ["start", "начать"]
 
 OPEN_APP = "Перейти в приложение"
 
