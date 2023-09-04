@@ -3,7 +3,7 @@ import time
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import PlainTextResponse
 
-from constants import API_TOKEN, GROUP_ID
+from constants import API_TOKEN, GROUP_ID, CALLBACK_SECRET
 from models.CallbackReq import CallbackReq
 from models.SensMessagesReq import SendMessagesReq
 from utils.db_utils import get_user_ids
@@ -17,7 +17,8 @@ async def callback(req: CallbackReq):
     if req.type == "confirmation":
         return confirm_server()
     elif req.type == "message_new":
-        message_new(req.object)
+        if req.secret == CALLBACK_SECRET:
+            message_new(req.object)
         return PlainTextResponse("ok")
 
 

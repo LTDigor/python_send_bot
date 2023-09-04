@@ -44,3 +44,5 @@ class CallbackReq(BaseModel):
     event_id: Optional[str] = None
     v: Optional[str] = None
     object: Optional[CallbackObject] = None
+    secret: Optional[str] = None
+
