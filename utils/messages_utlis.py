@@ -12,7 +12,6 @@ def message_new(obj: CallbackObject):
     start_screen = build_keyboard_start_screen()
 
     payload = obj.message.payload
-    print(obj)
     if payload and payload.command or obj.message.text.lower().strip() in START_COMMAND_LIST:
         meeting_screen(start_screen, user_id)
     elif obj.message.text.lower().strip() == WANT_SUBSCRIBE.lower():
@@ -24,7 +23,7 @@ def message_new(obj: CallbackObject):
     elif payload and payload.type:
         mailing_operation(payload, user_id)
     else:
-        raise HTTPException(status_code=400, detail=f"Unknown text {obj.message.text}")
+        send_message(CHOOSE_ACTION, user_id, start_screen)
 
 
 def meeting_screen(start_screen, user_id):
