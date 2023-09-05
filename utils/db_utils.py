@@ -1,19 +1,11 @@
 from typing import Optional, List
 
-from fastapi import HTTPException
 from sqlalchemy import select, insert, delete, and_
 from sqlalchemy.orm import Session
 
 from db.create_tables import engine
 from db.db_declaration import UserMailings, MailingTypes
-
-
-def validate(data_ids, user_ids):
-    if set(data_ids) != set(user_ids):
-        raise HTTPException(
-            status_code=400,
-            detail=f"Users {set(user_ids).difference(set(data_ids))} have no subscription"
-        )
+from utils.validation_utils import validate_users
 
 
 def get_user_ids(mailing_type: int, user_ids: Optional[List[int]]) -> List[int]:
@@ -38,7 +30,7 @@ def get_user_ids(mailing_type: int, user_ids: Optional[List[int]]) -> List[int]:
 
     data_ids = list(data.scalars().all())
     if user_ids:
-        validate(data_ids, user_ids)
+        validate_users(data_ids, user_ids)
     return data_ids
 
 
@@ -129,3 +121,16 @@ def unsubscribe_user_everywhere(user_id):
         )
     ))
     db.commit()
+
+
+def get_mailing_description(mailing_id):
+    db = Session(engine)
+    mailing_description = db.execute(select(
+        MailingTypes.description
+    ).where(
+        and_(
+            MailingTypes.id == mailing_id,
+        )
+    )).scalars().one()
+
+    return mailing_description

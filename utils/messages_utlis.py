@@ -1,10 +1,18 @@
 import vk_api
+from fastapi import HTTPException
 
 from bot_text.bot_text import *
-from constants import API_TOKEN
+from constants.bot_constants import API_TOKEN
 from models.CallbackReq import CallbackObject, Payload
 from utils.db_utils import *
 from utils.keyboard_utlis import build_keyboard_subscribe, build_keyboard_unsubscribe, build_keyboard_start_screen
+
+
+def allow_messages(obj: CallbackObject):
+    user_id = obj.message.from_id
+    start_screen = build_keyboard_start_screen()
+
+    meeting_screen(start_screen, user_id)
 
 
 def message_new(obj: CallbackObject):

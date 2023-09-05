@@ -1,7 +1,7 @@
 import json
 
 from bot_text.bot_text import *
-from constants import APP_ID
+from constants.bot_constants import APP_ID
 from utils.db_utils import get_mailings
 
 
