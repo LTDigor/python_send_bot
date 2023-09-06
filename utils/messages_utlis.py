@@ -9,7 +9,7 @@ from utils.keyboard_utlis import build_keyboard_subscribe, build_keyboard_unsubs
 
 
 def allow_messages(obj: CallbackObject):
-    user_id = obj.message.from_id
+    user_id = obj.user_id
     start_screen = build_keyboard_start_screen()
 
     meeting_screen(start_screen, user_id)
