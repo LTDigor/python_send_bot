@@ -34,8 +34,10 @@ class ClientInfo(BaseModel):
 
 
 class CallbackObject(BaseModel):
-    message: Message
-    client_info: ClientInfo
+    message: Optional[Message] = None
+    client_info: Optional[ClientInfo] = None
+    user_id: Optional[int] = None
+    key: Optional[str] = None
 
 
 class CallbackReq(BaseModel):
