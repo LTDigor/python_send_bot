@@ -12,7 +12,7 @@ def allow_messages(obj: CallbackObject):
     user_id = obj.user_id
     start_screen = build_keyboard_start_screen()
 
-    meeting_screen(start_screen, user_id)
+    meeting_screen_and_subscription(start_screen, user_id)
 
 
 def message_new(obj: CallbackObject):
@@ -21,7 +21,7 @@ def message_new(obj: CallbackObject):
 
     payload = obj.message.payload
     if payload and payload.command or obj.message.text.lower().strip() in START_COMMAND_LIST:
-        meeting_screen(start_screen, user_id)
+        meeting_screen_and_subscription(start_screen, user_id)
     elif obj.message.text.lower().strip() == WANT_SUBSCRIBE.lower():
         subscribe_list_screen(user_id)
     elif obj.message.text.lower().strip() == WANT_UNSUBSCRIBE.lower():
@@ -34,7 +34,7 @@ def message_new(obj: CallbackObject):
         send_message(CHOOSE_ACTION, user_id, start_screen)
 
 
-def meeting_screen(start_screen, user_id):
+def meeting_screen_and_subscription(start_screen, user_id):
     subscribe_everywhere(user_id)
     send_message(MEETING_TEXT, user_id, start_screen)
 
